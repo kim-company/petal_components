@@ -543,6 +543,8 @@ defmodule PetalComponents.Form do
   attr(:field, :atom, default: nil, doc: "")
   attr(:label, :string, default: nil, doc: "labels your field")
   attr(:class, :string, default: "", doc: "extra classes for the text input")
+  attr(:container_classes, :string, default: "", doc: "extra classes for the container each checkbox")
+  attr(:option_label_classes, :string, default: "", doc: "extra classes for the label")
   attr(:options, :list, default: [], doc: "options for the select")
   attr(:layout, :atom, default: :col, values: [:row, :col], doc: "layout for the checkboxes")
   attr(:checked, :list, doc: "a list of checked values")
@@ -565,7 +567,7 @@ defmodule PetalComponents.Form do
       |> assign_new(:id_prefix, fn -> Form.input_id(assigns[:form], assigns[:field]) <> "_" end)
 
     ~H"""
-    <div class={checkbox_group_layout_classes(%{layout: @layout})}>
+    <div class={checkbox_group_layout_classes(%{layout: @layout, class: @container_classes})}>
       <%= Form.hidden_input(@form, @field, name: Form.input_name(@form, @field), value: "") %>
       <%= for {label, value} <- @options do %>
         <label class={checkbox_group_layout_item_classes(%{layout: @layout})}>
@@ -579,9 +581,10 @@ defmodule PetalComponents.Form do
             value={value}
             checked={to_string(value) in @checked}
             hidden_input={false}
+            class={@class}
             {@rest}
           />
-          <div class={label_classes(%{form: @form, field: @field, type: "checkbox"})}>
+          <div class={label_classes(%{form: @form, field: @field, type: "checkbox", class: @option_label_classes})}>
             <%= label %>
           </div>
         </label>
@@ -807,10 +810,10 @@ defmodule PetalComponents.Form do
   defp checkbox_group_layout_classes(assigns) do
     case assigns[:layout] do
       :row ->
-        "pc-checkbox-group--row"
+        "pc-checkbox-group--row #{assigns[:class]}"
 
       _col ->
-        "pc-checkbox-group--col"
+        "pc-checkbox-group--col #{assigns[:class]}"
     end
   end
 
